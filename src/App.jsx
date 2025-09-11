@@ -1,35 +1,64 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { Routes, Route } from "react-router-dom";
+import Login from "./components/Login/Login.jsx";
+import Register from "./components/Register/Register.jsx";
+import PetDashboard from './main-components/ManagePet/PetDashboard/PetDashboard.jsx';
+import CreatePet from './components/ManagePet/CreatePet.jsx';
 
-function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+const AllRoute = () => {
+    return (
+        <Routes>
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+            <Route path="pet-dashboard" element={<PetDashboard />} />
+            <Route path="pet-dashboard/create" element={<CreatePet />} />
 
-export default App
+        </Routes>
+    );
+};
+
+export default AllRoute;
+
+// import React from 'react';
+// import { BrowserRouter, Routes, Route, } from "react-router-dom";
+// import HomePage from './main-components/Home/HomePage';
+// import PetDashboard from './main-components/ManagePet/PetDashboard/PetDashboard.jsx';
+// import PetDetails from './main-components/ManagePet/PetDetails/PetDetails.jsx';
+// import Booking from 'main-components/Appointments/Booking/Booking.jsx';
+// import CareCentre from 'main-components/Appointments/CareCentre/CareCentre.jsx';
+// import Shop from 'main-components/Shop/Shop/Shop.jsx';
+// import Cart from 'main-components/Shop/Cart/Cart.jsx';
+// import Timeline from 'main-components/TrackHealth/HealthTimeline/Timeline.jsx';
+// import PetProfile from 'main-components/TrackHealth/Petprofile/Petprofile.jsx'
+// import MedicalDocuments from 'main-components/TrackHealth/MedicalDocuments/MedicalDocuments.jsx'
+//
+//
+//
+//
+//
+// const AllRoute = () => {
+//
+//     return (
+//         <div className="App">
+//             <BrowserRouter>
+//                 <Routes>
+//                     <Route path="/" element={<HomePage />} />
+//                     <Route path="home" element={<HomePage />} />
+//                     <Route path="pet-dashboard" element={<PetDashboard />} />
+//                     <Route path="pet-details" element={<PetDetails />} />
+//                     <Route path='booking' element={<Booking />} />
+//                     <Route path='cart' element={<Cart />} />
+//                     <Route path='care-centre' element={<CareCentre />} />
+//                     <Route path='shop' element={<Shop />} />
+//                     <Route path="timeline" element={<Timeline />} />
+//                     <Route path="pet-profile" element={<PetProfile />} />
+//                     <Route path="medical-documents" element={<MedicalDocuments />} />
+//                 </Routes>
+//             </BrowserRouter>
+//
+//         </div>
+//     );
+// }
+//
+// export default AllRoute;
