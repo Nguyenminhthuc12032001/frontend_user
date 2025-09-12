@@ -1,7 +1,7 @@
 /* Background page */
-.register-page {
+.forgot-page {
     background: linear-gradient(to right, #ffe6cc, #fff0f5);
-    background-image: url("/Samiupet/app/public/images/Register_background.png");
+    background-image: url("../assets/images/forgot_password_background.png");
     background-size: cover;
     background-position: center;
 }

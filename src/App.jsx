@@ -2,6 +2,8 @@ import React from 'react';
 import { Routes, Route } from "react-router-dom";
 import Login from "./components/Login/Login.jsx";
 import Register from "./components/Register/Register.jsx";
+import ForgotPassword from "./components/Password/ForgotPassword.jsx";
+
 import PetDashboard from './main-components/ManagePet/PetDashboard/PetDashboard.jsx';
 import CreatePet from './components/ManagePet/CreatePet.jsx';
 
@@ -11,8 +13,10 @@ const AllRoute = () => {
         <Routes>
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
+            <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="pet-dashboard" element={<PetDashboard />} />
             <Route path="pet-dashboard/create" element={<CreatePet />} />
+
 
         </Routes>
     );

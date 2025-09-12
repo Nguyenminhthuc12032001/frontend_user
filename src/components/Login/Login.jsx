@@ -223,7 +223,7 @@ const Login = () => {
                         Create a new account
                     </a>
                     <a
-                        href="/reset-password"
+                        href="/forgot-password"
                         className="link-register"
                         style={{
                             display: "block",

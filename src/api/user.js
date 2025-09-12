@@ -40,3 +40,26 @@ export async function register({ name, email, password_hash, confirmPassword, ph
         }
     }
 }
+export async function resetPasswordRequest(email) {
+    try {
+        const res = await api.post("/resetPasswordRequest", { email });
+        return res.data; // { msg: "Check your email" }
+    } catch (error) {
+        console.error("❌ Reset request error:", error.response?.data || error.message);
+        throw error.response?.data || { msg: error.message };
+    }
+}
+
+// Đổi mật khẩu mới bằng token (link trong mail)
+export async function resetPassword(userId, token, newPassword) {
+    try {
+        const res = await api.post(`/resetPassword/${userId}`, {
+            token,
+            password_hash: newPassword,
+        });
+        return res.data; // { msg: "Password changed successfully" }
+    } catch (error) {
+        console.error("❌ Reset password error:", error.response?.data || error.message);
+        throw error.response?.data || { msg: error.message };
+    }
+}
