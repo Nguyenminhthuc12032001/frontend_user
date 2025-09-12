@@ -168,10 +168,11 @@ const Register = () => {
                         </button>
                         <a
                             href="/login"
-                            className="w-full block text-center text-blue-500 hover:underline mt-2"
+                            className="login-link"
                         >
                             Login
                         </a>
+
                     </form>
                 </div>
             </div>

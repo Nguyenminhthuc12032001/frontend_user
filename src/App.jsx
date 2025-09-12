@@ -3,9 +3,13 @@ import { Routes, Route } from "react-router-dom";
 import Login from "./components/Login/Login.jsx";
 import Register from "./components/Register/Register.jsx";
 import ForgotPassword from "./components/Password/ForgotPassword.jsx";
-
-import PetDashboard from './main-components/ManagePet/PetDashboard/PetDashboard.jsx';
 import CreatePet from './components/ManagePet/CreatePet.jsx';
+import EditPet from './components/ManagePet/EditPet.jsx';
+import DeletePet from './components/ManagePet/DeletePet.jsx';
+import PetDashboard from './main-components/ManagePet/PetDashboard/PetDashboard.jsx';
+import PetDetails from "./main-components/ManagePet/PetDetails/PetDetails.jsx";
+
+
 
 
 const AllRoute = () => {
@@ -16,6 +20,10 @@ const AllRoute = () => {
             <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="pet-dashboard" element={<PetDashboard />} />
             <Route path="pet-dashboard/create" element={<CreatePet />} />
+            <Route path="pet-dashboard/edit/:id" element={<EditPet />} />
+            <Route path="pet-dashboard/delete/:id" element={<DeletePet />} />
+            <Route path="pet-details/:id" element={<PetDetails />} />
+
 
 
         </Routes>

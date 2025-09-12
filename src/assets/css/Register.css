@@ -1,9 +1,9 @@
 /* Background page */
-.forgot-page {
+.register-page {
     background: linear-gradient(to right, #ffe6cc, #fff0f5);
-    background-image: url("../assets/images/forgot_password_background.png");
     background-size: cover;
     background-position: center;
+    color: #5c3a21; /* chữ màu nâu */
 }
 
 /* Hình chó + mèo */
@@ -24,7 +24,6 @@
     transition: all 1s ease;
 }
 
-/* Khởi đầu: chỉ thấy chó */
 .pet-images .dog {
     opacity: 1;
     transform: translateX(0);
@@ -34,7 +33,6 @@
     transform: translateX(-50px);
 }
 
-/* Khi hover container: chó biến mất, mèo xuất hiện bên phải */
 .register-container:hover .pet-images .dog {
     opacity: 0;
     transform: translateX(-50px) rotate(-15deg);
@@ -42,4 +40,57 @@
 .register-container:hover .pet-images .cat {
     opacity: 1;
     transform: translateX(50px);
+}
+
+/* Button đăng ký */
+.register-container button,
+.register-container input[type="submit"] {
+    background-color: #f5c79e; /* be-cam */
+    color: #5c3a21; /* chữ nâu */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.register-container button:hover,
+.register-container input[type="submit"]:hover {
+    background-color: #e0b180; /* sáng hơn khi hover */
+}
+
+/* Input text */
+.register-container input[type="text"],
+.register-container input[type="email"],
+.register-container input[type="password"],
+.register-container input[type="tel"] {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #5c3a21; /* chữ nâu */
+}
+
+/* Placeholder input */
+.register-container input::placeholder {
+    color: #5c3a21;
+    opacity: 0.7;
+}
+
+/* Link login */
+.register-container a.login-link {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    margin-top: 8px;
+    background-color: #5c3a21; /* nền nâu */
+    color: #f5c79e; /* chữ be */
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.register-container a.login-link:hover {
+    background-color: #482e19; /* nền nâu đậm khi hover */
+    color: #ffe6cc; /* chữ be sáng hơn */
 }

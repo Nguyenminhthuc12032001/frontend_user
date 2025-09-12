@@ -1,15 +1,61 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { createPet } from "../../api/managepet";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getPetById, updatePet } from "../../api/managepet";
 import backgroundImage from "../../assets/images/create_pet_background.png";
-import "../../assets/css/CreatePet.css"; // Thêm file CSS cho hiệu ứng shine
+import "../../assets/css/CreatePet.css"; // dùng chung CSS để có hiệu ứng shine
 
-const CreatePet = () => {
-    const [imageLinks, setImageLinks] = useState([""]);
-    const [loading, setLoading] = useState(false);
+const EditPet = () => {
+    const { id } = useParams();
     const navigate = useNavigate();
 
+    const [pet, setPet] = useState({
+        name: "",
+        species: "",
+        breed: "",
+        age: "",
+        gender: "",
+        images: [],
+    });
+    const [imageLinks, setImageLinks] = useState([""]);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+
     const brownColor = "#8B4513";
+
+    // Lấy dữ liệu pet và set sẵn cho form
+    useEffect(() => {
+        const fetchPet = async () => {
+            try {
+                const data = await getPetById(id);
+                console.log("API response:", data);
+
+                const petData = data?.pet || data;
+
+                setPet({
+                    name: petData.name || "",
+                    species: petData.species || "",
+                    breed: petData.breed || "",
+                    age: petData.age != null ? String(petData.age) : "",
+                    gender: petData.gender || "",
+                    images: petData.images || [],
+                });
+
+                setImageLinks(petData.images && petData.images.length ? petData.images : [""]);
+            } catch (err) {
+                console.error(err);
+                alert("Failed to load pet info");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchPet();
+    }, [id]);
+
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setPet((prev) => ({ ...prev, [name]: value }));
+    };
 
     const handleImageChange = (index, value) => {
         const newLinks = [...imageLinks];
@@ -25,36 +71,40 @@ const CreatePet = () => {
         setImageLinks([...imageLinks, ""]);
     };
 
-    const removeImageField = (index) => setImageLinks(imageLinks.filter((_, i) => i !== index));
+    const removeImageField = (index) => {
+        setImageLinks(imageLinks.filter((_, i) => i !== index));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const validLinks = imageLinks.filter(link => link.trim() !== "");
+        const validLinks = imageLinks.filter((link) => link.trim() !== "");
         if (!validLinks.length) return alert("Please enter at least one image link");
 
-        setLoading(true);
+        setSaving(true);
+
         const payload = {
-            name: e.target.name.value,
-            species: e.target.species.value,
-            breed: e.target.breed.value,
-            age: parseInt(e.target.age.value, 10),
-            gender: e.target.gender.value,
+            name: pet.name,
+            species: pet.species,
+            breed: pet.breed,
+            age: parseInt(pet.age, 10),
+            gender: pet.gender,
             images: validLinks.slice(0, 5),
         };
 
         try {
-            await createPet(payload);
-            alert("Pet added successfully!");
-            e.target.reset();
-            setImageLinks([""]);
+            await updatePet(id, payload);
+            alert("Pet updated successfully!");
             navigate("/pet-dashboard");
         } catch (err) {
             console.error(err);
-            alert("Failed to add pet!");
+            alert("Failed to update pet!");
         } finally {
-            setLoading(false);
+            setSaving(false);
         }
     };
+
+    if (loading)
+        return <p className="text-center mt-6">Loading pet information...</p>;
 
     return (
         <div
@@ -66,7 +116,6 @@ const CreatePet = () => {
                 padding: "20px",
             }}
         >
-            {/* Overlay mờ nhẹ */}
             <div className="absolute inset-0 bg-black/20"></div>
 
             <form
@@ -77,7 +126,7 @@ const CreatePet = () => {
                     className="text-3xl font-extrabold text-center"
                     style={{ color: brownColor, textShadow: "1px 1px 2px rgba(0,0,0,0.4)" }}
                 >
-                    Add New Pet
+                    Edit Pet
                 </h2>
 
                 {["name", "species", "breed", "age"].map((field, idx) => (
@@ -88,6 +137,8 @@ const CreatePet = () => {
                         <input
                             type={field === "age" ? "number" : "text"}
                             name={field}
+                            value={pet[field] || ""}
+                            onChange={handleChange}
                             required
                             className="w-full p-3 mt-1 rounded-xl border border-white/50 bg-white/50 text-brown placeholder:text-brown/70 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
                             style={{ color: brownColor }}
@@ -99,18 +150,28 @@ const CreatePet = () => {
                     <label style={{ color: brownColor, fontWeight: "500" }}>Gender:</label>
                     <select
                         name="gender"
+                        value={pet.gender || ""}
+                        onChange={handleChange}
                         required
                         className="w-full p-3 mt-1 rounded-xl border border-white/50 bg-white/50 text-brown focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
                         style={{ color: brownColor }}
                     >
-                        <option value="" style={{ color: brownColor }}>Select Gender</option>
-                        <option value="Male" style={{ color: brownColor }}>Male</option>
-                        <option value="Female" style={{ color: brownColor }}>Female</option>
+                        <option value="" style={{ color: brownColor }}>
+                            Select Gender
+                        </option>
+                        <option value="Male" style={{ color: brownColor }}>
+                            Male
+                        </option>
+                        <option value="Female" style={{ color: brownColor }}>
+                            Female
+                        </option>
                     </select>
                 </div>
 
                 <div>
-                    <label style={{ color: brownColor, fontWeight: "500" }}>Pet Images (links):</label>
+                    <label style={{ color: brownColor, fontWeight: "500" }}>
+                        Pet Images (links):
+                    </label>
                     {imageLinks.map((link, idx) => (
                         <div key={idx} className="flex gap-2 mt-2">
                             <input
@@ -143,16 +204,19 @@ const CreatePet = () => {
                     )}
                 </div>
 
-                {imageLinks.some(link => link.trim()) && (
+                {imageLinks.some((link) => link.trim()) && (
                     <div className="flex gap-2 flex-wrap mt-3">
-                        {imageLinks.filter(link => link.trim()).slice(0, 5).map((src, idx) => (
-                            <img
-                                key={idx}
-                                src={src}
-                                alt={`preview-${idx}`}
-                                className="w-24 h-24 object-cover rounded-xl border border-white/50 hover:scale-110 transition-transform duration-200"
-                            />
-                        ))}
+                        {imageLinks
+                            .filter((link) => link.trim())
+                            .slice(0, 5)
+                            .map((src, idx) => (
+                                <img
+                                    key={idx}
+                                    src={src}
+                                    alt={`preview-${idx}`}
+                                    className="w-24 h-24 object-cover rounded-xl border border-white/50 hover:scale-110 transition-transform duration-200"
+                                />
+                            ))}
                     </div>
                 )}
 
@@ -167,14 +231,14 @@ const CreatePet = () => {
                     </button>
                     <button
                         type="submit"
-                        disabled={loading}
+                        disabled={saving}
                         className={`px-6 py-3 rounded-xl text-white font-semibold shadow-lg btn-shine ${
-                            loading
+                            saving
                                 ? "bg-gray-400 cursor-not-allowed"
                                 : "bg-gradient-to-r from-yellow-600 to-yellow-800 hover:scale-105 hover:shadow-2xl transition-all duration-300"
                         }`}
                     >
-                        {loading ? "Adding..." : "Add Pet"}
+                        {saving ? "Saving..." : "Save Changes"}
                     </button>
                 </div>
             </form>
@@ -182,4 +246,4 @@ const CreatePet = () => {
     );
 };
 
-export default CreatePet;
+export default EditPet;
