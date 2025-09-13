@@ -1,3 +1,4 @@
+// PetList.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -23,57 +24,56 @@ const PetList = ({ pets, onDelete }) => {
 
     return (
         <div className="p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {/* Pet Grid */}
+            <div className="flex flex-wrap gap-6 justify-start">
                 {currentPets.map((pet) => (
                     <div
                         key={pet._id}
-                        className="relative rounded-lg overflow-hidden h-64 w-full shadow-lg flex items-end group"
+                        className="relative rounded-lg overflow-hidden shadow-lg flex items-end group"
+                        style={{ width: "350px", height: "250px" }}
                     >
                         {/* Background image */}
                         {pet.images && pet.images.length > 0 && (
                             <div
-                                className="absolute inset-0 bg-center bg-cover transition-transform duration-500 ease-in-out transform group-hover:scale-110 group-hover:brightness-110"
+                                className="absolute inset-0 bg-center bg-cover transition-transform duration-500 ease-in-out transform group-hover:scale-105 group-hover:brightness-110 cursor-pointer"
                                 style={{
                                     backgroundImage: `url(${pet.images[0]})`,
                                     filter: "brightness(70%)",
                                 }}
                                 onClick={() => navigate(`/pet-details/${pet._id}`)}
-                            ></div>
+                            />
                         )}
 
                         {/* Info overlay */}
                         <div
-                            className="relative z-10 p-4 m-2 w-full rounded-md transition-colors duration-500 group-hover:bg-[rgba(0,0,0,0.7)]"
-                            style={{
-                                backgroundColor: "rgba(0,0,0,0.3)",
-                                color: "#f5f5dc",
-                            }}
+                            className="relative z-10 p-3 w-full rounded-md transition-colors duration-300 group-hover:bg-[rgba(0,0,0,0.6)]"
+                            style={{ backgroundColor: "rgba(0,0,0,0.3)", color: "#f5f5dc" }}
                         >
-                            <h3 className="text-lg font-bold drop-shadow-md">{pet.name}</h3>
-                            <p className="drop-shadow-md"><strong>Species:</strong> {pet.species}</p>
-                            <p className="drop-shadow-md"><strong>Breed:</strong> {pet.breed}</p>
-                            <p className="drop-shadow-md"><strong>Age:</strong> {pet.age}</p>
-                            <p className="drop-shadow-md"><strong>Gender:</strong> {pet.gender}</p>
+                            <h3 className="text-md font-bold drop-shadow-md">{pet.name}</h3>
+                            <p className="drop-shadow-md text-sm">
+                                <strong>Species:</strong> {pet.species}
+                            </p>
+                            <p className="drop-shadow-md text-sm">
+                                <strong>Breed:</strong> {pet.breed}
+                            </p>
+                            <p className="drop-shadow-md text-sm">
+                                <strong>Age:</strong> {pet.age}
+                            </p>
+                            <p className="drop-shadow-md text-sm">
+                                <strong>Gender:</strong> {pet.gender}
+                            </p>
 
-                            <div className="mt-3 flex gap-2">
+                            <div className="mt-2 flex gap-2">
                                 <button
                                     onClick={() => navigate(`edit/${pet._id}`)}
-                                    className="flex-1 px-3 py-2 rounded-lg
-                   bg-gradient-to-r from-[#A0522D] to-[#8B4513]
-                   text-beige font-semibold shadow
-                   hover:from-[#8B4513] hover:to-[#A0522D]
-                   hover:scale-105 transition-all duration-300"
-                                    style={{color: "#f5f5dc"}} // chữ màu be
+                                    className="flex-1 px-3 py-2 rounded-lg bg-gradient-to-r from-[#A0522D] to-[#8B4513] text-beige text-xs font-semibold shadow-lg transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl hover:from-[#8B4513] hover:to-[#D2B48C]"
+                                    style={{ color: "#f5f5dc" }}
                                 >
                                     ✏️ Edit
                                 </button>
                                 <button
                                     onClick={() => onDelete(pet._id)}
-                                    className="flex-1 px-3 py-2 rounded-lg
-                   bg-gradient-to-r from-[#f5f5dc] to-[#8B0000]
-                   text-[#8B4513] font-semibold shadow
-                   hover:from-[#8B0000] hover:to-[#f5f5dc]
-                   hover:scale-105 transition-all duration-300"
+                                    className="flex-1 px-3 py-2 rounded-lg bg-gradient-to-r from-[#8B0000] to-[#B22222] text-[#f5f5dc] text-xs font-semibold shadow-lg transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl hover:from-[#B22222] hover:to-[#FF6347]"
                                 >
                                     🗑️ Delete
                                 </button>
@@ -84,11 +84,11 @@ const PetList = ({ pets, onDelete }) => {
             </div>
 
             {/* Pagination */}
-            <div className="flex justify-center mt-6 gap-2 flex-wrap">
+            <div className="flex justify-center mt-4 gap-2 flex-wrap">
                 <button
                     onClick={() => handlePageChange(1)}
                     disabled={currentPage === 1}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow ${
+                    className={`px-3 py-1 rounded-md text-sm font-medium ${
                         currentPage === 1
                             ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                             : "bg-yellow-500 text-white hover:bg-yellow-600"
@@ -99,7 +99,7 @@ const PetList = ({ pets, onDelete }) => {
                 <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow ${
+                    className={`px-3 py-1 rounded-md text-sm font-medium ${
                         currentPage === 1
                             ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                             : "bg-yellow-500 text-white hover:bg-yellow-600"
@@ -112,7 +112,7 @@ const PetList = ({ pets, onDelete }) => {
                     <button
                         key={index}
                         onClick={() => handlePageChange(index + 1)}
-                        className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow ${
+                        className={`px-3 py-1 rounded-md text-sm font-medium ${
                             currentPage === index + 1
                                 ? "bg-yellow-700 text-white"
                                 : "bg-yellow-500 text-white hover:bg-yellow-600"
@@ -125,7 +125,7 @@ const PetList = ({ pets, onDelete }) => {
                 <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow ${
+                    className={`px-3 py-1 rounded-md text-sm font-medium ${
                         currentPage === totalPages
                             ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                             : "bg-yellow-500 text-white hover:bg-yellow-600"
@@ -136,7 +136,7 @@ const PetList = ({ pets, onDelete }) => {
                 <button
                     onClick={() => handlePageChange(totalPages)}
                     disabled={currentPage === totalPages}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow ${
+                    className={`px-3 py-1 rounded-md text-sm font-medium ${
                         currentPage === totalPages
                             ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                             : "bg-yellow-500 text-white hover:bg-yellow-600"

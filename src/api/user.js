@@ -1,45 +1,63 @@
 import axios from "axios";
 
+// Tạo instance axios
 const api = axios.create({
     baseURL: "http://172.16.3.236:5000/api/user",
 });
 
+// Interceptor: tự động thêm token từ localStorage
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+}, (error) => Promise.reject(error));
 
+/**
+ * Login
+ * Lưu token vào localStorage
+ */
 export async function login(email, password_hash) {
     try {
-        const res = await api.post("/login", {
-            email,
-            password_hash
-        });
-
-        // Ví dụ backend trả về { token: "...", user: {...} }
+        const res = await api.post("/login", { email, password_hash });
         const { token } = res.data;
 
-        // Lưu token vào localStorage để dùng cho các request sau
         if (token) {
             localStorage.setItem("token", token);
         }
 
-        return { token };
+        return { token, user: res.data.user };
     } catch (error) {
         console.error("❌ Login error:", error.response?.data || error.message);
-        throw error;
+        throw error.response?.data || { msg: error.message };
     }
-
 }
+
+/**
+ * Logout
+ * Xóa token khỏi localStorage
+ */
+export function logout() {
+    localStorage.removeItem("token");
+}
+
+/**
+ * Register
+ */
 export async function register({ name, email, password_hash, confirmPassword, phone_number }) {
     try {
         const res = await api.post("/createNew", { name, email, password_hash, confirmPassword, phone_number });
-        return res.data; // backend trả về { msg: "Check your email" }
+        return res.data; // { msg: "Check your email" }
     } catch (error) {
-        if (error.response && error.response.data) {
-            // throw object backend trả về
-            throw error.response.data;
-        } else {
-            throw { msg: error.message || "Registration failed!" };
-        }
+        if (error.response?.data) throw error.response.data;
+        throw { msg: error.message || "Registration failed!" };
     }
 }
+
+/**
+ * Gửi yêu cầu reset mật khẩu
+ */
 export async function resetPasswordRequest(email) {
     try {
         const res = await api.post("/resetPasswordRequest", { email });
@@ -50,7 +68,9 @@ export async function resetPasswordRequest(email) {
     }
 }
 
-// Đổi mật khẩu mới bằng token (link trong mail)
+/**
+ * Đổi mật khẩu mới bằng token từ email
+ */
 export async function resetPassword(userId, token, newPassword) {
     try {
         const res = await api.post(`/resetPassword/${userId}`, {
@@ -62,4 +82,11 @@ export async function resetPassword(userId, token, newPassword) {
         console.error("❌ Reset password error:", error.response?.data || error.message);
         throw error.response?.data || { msg: error.message };
     }
+}
+
+/**
+ * Hàm helper: lấy token từ localStorage
+ */
+export function getToken() {
+    return localStorage.getItem("token");
 }

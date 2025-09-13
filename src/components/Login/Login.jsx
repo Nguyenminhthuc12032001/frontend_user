@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // import useNavigate
 import bgImage from "../../assets/images/Login_background.png";
-import { login } from "../../api/user"; // import hàm login từ api/user.js
+import { login } from "../../api/user";
 
 const Login = () => {
     const [form, setForm] = useState({ email: "", password: "" });
     const [error, setError] = useState("");
+    const navigate = useNavigate(); // khởi tạo navigate
 
     const handleChange = (e) => {
         setForm({
@@ -19,26 +21,21 @@ const Login = () => {
         if (form.email === "" || form.password === "") {
             setError("Please enter all required fields!");
             return;
-
         }
 
         try {
-            const { token} = await login(
-                   form.email,
-                   form.password,
-            );
+            const { token } = await login(form.email, form.password);
 
-            setError("");
-            alert("Login successful 🎉");
-
-            // 👉 lưu token nếu muốn sử dụng sau
+            // Lưu token
             localStorage.setItem("token", token);
 
-            // TODO: chuyển hướng sang dashboardr
-            // navigate("/dashboard");
+            setError("");
+
+            // Chuyển hướng sang trang Home
+            navigate("/home"); // hoặc "/" nếu Home nằm ở root
         } catch (err) {
             setError(
-                err.response?.data?.message || "Invalid email or password_hash!"
+                err.response?.data?.message || "Invalid email or password!"
             );
         }
     };
@@ -123,8 +120,8 @@ const Login = () => {
                         color: "#fff",
                     }}
                 >
-          🐾
-        </span>
+                    🐾
+                </span>
                 <span
                     style={{
                         position: "absolute",
@@ -134,8 +131,8 @@ const Login = () => {
                         color: "#fff",
                     }}
                 >
-          🐾
-        </span>
+                    🐾
+                </span>
 
                 <h1
                     className="mb-1 text-center"

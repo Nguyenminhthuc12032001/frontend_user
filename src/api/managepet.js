@@ -1,12 +1,21 @@
 import axios from "axios";
 
-// Token cố định
-const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzNiZjFjNTJmYjIyOGI4ZTVkYWU0NSIsInJvbGUiOiJhZG1pbiIsInZlcnNpb25Ub2tlbiI6MCwiaWF0IjoxNzU3NjYyMTcyLCJleHAiOjE3NTc2NzI5NzJ9.c_qm7yWANewQDPH5kg5ldvLUf2Q6bugV2Hy7_eTJHvc";
-
+// Tạo instance axios
 const api = axios.create({
     baseURL: "http://172.16.3.236:5000/api/pet",
-    headers: { Authorization: `Bearer ${TOKEN}` },
 });
+
+// Interceptor tự động thêm token từ localStorage
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem("token"); // lấy token khi user login
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
 
 // Lấy tất cả thú cưng
 export const getAllPets = async () => {
@@ -18,16 +27,18 @@ export const getAllPets = async () => {
         throw err;
     }
 };
+
+// Lấy thú cưng theo id
 export const getPetById = async (id) => {
     try {
         const res = await api.get(`/get/${id}`);
         return res.data;
     } catch (err) {
         console.error(`Error fetching pet with id ${id}:`, err);
-        console.log("Pet data:", id);
         throw err;
     }
 };
+
 // Thêm thú cưng mới
 export const createPet = async (petData) => {
     try {
@@ -53,7 +64,7 @@ export const updatePet = async (id, petData) => {
 // Xóa thú cưng
 export const deletePet = async (id) => {
     try {
-        const res = await api.delete(`/delete/${id}`); // bỏ //, thêm delete
+        const res = await api.delete(`/delete/${id}`);
         return res.data;
     } catch (err) {
         console.error("Error deleting pet:", err.response?.data || err);

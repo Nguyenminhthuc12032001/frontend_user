@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom global styles */
+.search-input::placeholder {
+    color: #7b4f2e;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+nav ul li a {
+    position: relative;
+    display: inline-block;
+}
+
+nav ul li a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 0;
+    background-color: #7b4f2e; /* màu nâu */
+    transition: width 0.3s ease;
+}
+
+nav ul li a:hover::after {
+    width: 100%;
+}

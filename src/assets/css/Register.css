@@ -1,29 +1,56 @@
 /* Background page */
 .register-page {
     background: linear-gradient(to right, #ffe6cc, #fff0f5);
-    background-size: cover;
-    background-position: center;
-    color: #5c3a21; /* chữ màu nâu */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Hình chó + mèo */
+/* Container chính */
+.register-container {
+    display: flex;
+    flex-direction: row; /* ảnh bên trái, form bên phải */
+    max-width: 900px;
+    width: 100%;
+    background-color: rgba(255,255,255,0.9);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Khối ảnh */
+/* Khối ảnh */
 .pet-images {
-    width: 200px;
-    height: 200px;
-    margin: 0 auto;
+    width: 40%;
+    min-width: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px; /* khoảng cách từ container */
     position: relative;
+}
+
+/* Thêm wrapper cho ảnh */
+.pet-images .img-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 20px; /* khoảng cách ảnh bên trong container */
 }
 
 .pet-images img {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 85%;
+    height: 85%;
     object-fit: contain;
     transition: all 1s ease;
 }
 
+
+/* Khởi đầu: chỉ thấy chó */
 .pet-images .dog {
     opacity: 1;
     transform: translateX(0);
@@ -33,6 +60,7 @@
     transform: translateX(-50px);
 }
 
+/* Khi hover container: chó biến mất, mèo xuất hiện */
 .register-container:hover .pet-images .dog {
     opacity: 0;
     transform: translateX(-50px) rotate(-15deg);
@@ -42,55 +70,75 @@
     transform: translateX(50px);
 }
 
-/* Button đăng ký */
-.register-container button,
-.register-container input[type="submit"] {
-    background-color: #f5c79e; /* be-cam */
-    color: #5c3a21; /* chữ nâu */
-    border: none;
-    padding: 10px 20px;
+/* Form bên phải */
+.register-form {
+    width: 60%; /* form chiếm 60% */
+    padding: 30px 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Style input và button */
+.register-form input,
+.register-form button {
+    width: 100%;
     border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    padding: 10px 12px;
+    margin-bottom: 15px;
 }
 
-.register-container button:hover,
-.register-container input[type="submit"]:hover {
-    background-color: #e0b180; /* sáng hơn khi hover */
-}
-
-/* Input text */
-.register-container input[type="text"],
-.register-container input[type="email"],
-.register-container input[type="password"],
-.register-container input[type="tel"] {
+.register-form input {
     border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 8px 12px;
-    color: #5c3a21; /* chữ nâu */
+    color: #5c3a21;
 }
 
-/* Placeholder input */
-.register-container input::placeholder {
+.register-form input::placeholder {
     color: #5c3a21;
     opacity: 0.7;
 }
 
-/* Link login */
-.register-container a.login-link {
+.register-form button {
+    background-color: #f5c79e;
+    color: #5c3a21;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.register-form button:hover {
+    background-color: #e0b180;
+}
+
+/* Link Login */
+.register-form a {
     display: block;
-    width: 100%;
     text-align: center;
-    padding: 10px 0;
-    margin-top: 8px;
+    margin-top: 10px;
     background-color: #5c3a21; /* nền nâu */
     color: #f5c79e; /* chữ be */
+    padding: 8px 12px;
     border-radius: 6px;
     text-decoration: none;
     transition: all 0.3s ease;
 }
 
-.register-container a.login-link:hover {
-    background-color: #482e19; /* nền nâu đậm khi hover */
-    color: #ffe6cc; /* chữ be sáng hơn */
+.register-form a:hover {
+    background-color: #4a2f18; /* nền tối hơn khi hover */
+}
+
+/* Responsive: màn hình nhỏ thì ảnh trên, form dưới */
+@media (max-width: 768px) {
+    .register-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .pet-images, .register-form {
+        width: 90%;
+    }
+
+    .pet-images {
+        margin-bottom: 20px;
+    }
 }

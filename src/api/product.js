@@ -1,18 +1,26 @@
 import axios from "axios";
 
-// Token cố định
-const TOKEN =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzEzZjIzNjFkMTFhYmJjOTdlMDJhOSIsInJvbGUiOiJhZG1pbiIsInZlcnNpb25Ub2tlbiI6MSwiaWF0IjoxNzU3NjQ4ODc2LCJleHAiOjE3NTc2NTk2NzZ9.yF4nRH8xuf-3k4FunGeofa8Z8ul5ELWdrOwkvk6OogM";
-
+// Tạo instance axios
 const api = axios.create({
     baseURL: "http://172.16.3.236:5000/api/product",
-    headers: { Authorization: `Bearer ${TOKEN}` },
 });
+
+// Interceptor: tự động thêm token từ localStorage
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem("token"); // lấy token khi user login
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
 
 // Lấy tất cả sản phẩm
 export const getAllProducts = async () => {
     try {
-        const res = await api.get("/");
+        const res = await api.get("/getAll");
         return res.data;
     } catch (err) {
         console.error("Error fetching products:", err);
@@ -23,7 +31,7 @@ export const getAllProducts = async () => {
 // Lấy sản phẩm theo id
 export const getProductById = async (id) => {
     try {
-        const res = await api.get(`/${id}`);
+        const res = await api.get(`/get/${id}`);
         return res.data;
     } catch (err) {
         console.error(`Error fetching product with id ${id}:`, err);

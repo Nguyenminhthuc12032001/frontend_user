@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route } from "react-router-dom";
+
 import Login from "./components/Login/Login.jsx";
 import Register from "./components/Register/Register.jsx";
 import ForgotPassword from "./components/Password/ForgotPassword.jsx";
@@ -8,69 +9,44 @@ import EditPet from './components/ManagePet/EditPet.jsx';
 import DeletePet from './components/ManagePet/DeletePet.jsx';
 import PetDashboard from './main-components/ManagePet/PetDashboard/PetDashboard.jsx';
 import PetDetails from "./main-components/ManagePet/PetDetails/PetDetails.jsx";
-
-
-
+import Shop from 'main-components/Shop/Shop/Shop.jsx';
+import ProductList from "./components/Shop/ProductList.jsx";
+import ProductDetails from "./components/Shop/ProductDetails.jsx";
+import Success from "./components/SuccessPage/Success.jsx";
+import EmailVerifiedSuccess from "./components/Email/EmailVerifiedSuccess.jsx";
+import HomePage from "./main-components/Home/HomePage.jsx"
+import Cart from "./main-components/Shop/Cart/Cart.jsx";
+import MainLayout from './layouts/MainLayout.jsx'; // layout mới
+import PrivateRoute from './components/Auth/PrivateRoute.jsx'; // import component
 
 const AllRoute = () => {
     return (
         <Routes>
+            {/* Routes KHÔNG có Header */}
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
             <Route path="forgot-password" element={<ForgotPassword />} />
-            <Route path="pet-dashboard" element={<PetDashboard />} />
-            <Route path="pet-dashboard/create" element={<CreatePet />} />
-            <Route path="pet-dashboard/edit/:id" element={<EditPet />} />
-            <Route path="pet-dashboard/delete/:id" element={<DeletePet />} />
-            <Route path="pet-details/:id" element={<PetDetails />} />
+            <Route path="success" element={<Success />} />
+            <Route path="email-verified" element={<EmailVerifiedSuccess/>}/>
+            <Route path="cart" element={<Cart/>}/>
 
 
-
+            {/* Routes có Header (main-components) */}
+            <Route element={<MainLayout />}>
+                <Route element={<PrivateRoute />} />
+                <Route path="/" element={<HomePage />} />
+                <Route path="home" element={<HomePage/>}/>
+                <Route path="pet-dashboard" element={<PetDashboard />} />
+                <Route path="pet-dashboard/create" element={<CreatePet />} />
+                <Route path="pet-dashboard/edit/:id" element={<EditPet />} />
+                <Route path="pet-dashboard/delete/:id" element={<DeletePet />} />
+                <Route path="pet-details/:id" element={<PetDetails />} />
+                <Route path="shop" element={<Shop />} />
+                <Route path="product-list" element={<ProductList />} />
+                <Route path="product-details/:id" element={<ProductDetails />} />
+            </Route>
         </Routes>
     );
 };
 
 export default AllRoute;
-
-// import React from 'react';
-// import { BrowserRouter, Routes, Route, } from "react-router-dom";
-// import HomePage from './main-components/Home/HomePage';
-// import PetDashboard from './main-components/ManagePet/PetDashboard/PetDashboard.jsx';
-// import PetDetails from './main-components/ManagePet/PetDetails/PetDetails.jsx';
-// import Booking from 'main-components/Appointments/Booking/Booking.jsx';
-// import CareCentre from 'main-components/Appointments/CareCentre/CareCentre.jsx';
-// import Shop from 'main-components/Shop/Shop/Shop.jsx';
-// import Cart from 'main-components/Shop/Cart/Cart.jsx';
-// import Timeline from 'main-components/TrackHealth/HealthTimeline/Timeline.jsx';
-// import PetProfile from 'main-components/TrackHealth/Petprofile/Petprofile.jsx'
-// import MedicalDocuments from 'main-components/TrackHealth/MedicalDocuments/MedicalDocuments.jsx'
-//
-//
-//
-//
-//
-// const AllRoute = () => {
-//
-//     return (
-//         <div className="App">
-//             <BrowserRouter>
-//                 <Routes>
-//                     <Route path="/" element={<HomePage />} />
-//                     <Route path="home" element={<HomePage />} />
-//                     <Route path="pet-dashboard" element={<PetDashboard />} />
-//                     <Route path="pet-details" element={<PetDetails />} />
-//                     <Route path='booking' element={<Booking />} />
-//                     <Route path='cart' element={<Cart />} />
-//                     <Route path='care-centre' element={<CareCentre />} />
-//                     <Route path='shop' element={<Shop />} />
-//                     <Route path="timeline" element={<Timeline />} />
-//                     <Route path="pet-profile" element={<PetProfile />} />
-//                     <Route path="medical-documents" element={<MedicalDocuments />} />
-//                 </Routes>
-//             </BrowserRouter>
-//
-//         </div>
-//     );
-// }
-//
-// export default AllRoute;
