@@ -1,104 +1,107 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getCurrentCartOrderByUser, createOrder } from "../../../api/order";
 
 const Cart = () => {
-    const [order, setOrder] = useState(null);
-    const [items, setItems] = useState([]);
+    const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+    const navigate = useNavigate();
+
+    // Lấy giỏ hàng hiện tại
+    const fetchCart = async () => {
+        try {
+            const data = await getCurrentCartOrderByUser(); // API của bạn
+            setCartItems(data.items || []);
+            setLoading(false);
+        } catch (error) {
+            console.error("Failed to fetch cart:", error);
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchOrder = async () => {
-            try {
-                const data = await getCurrentCartOrderByUser();
-                console.log("Fetched order:", data);
-                setOrder(data.order);
-                setItems(data.order_items || []);
-            } catch (err) {
-                console.error(err.response?.data || err.message);
-                setError("Failed to fetch order");
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchOrder();
+        fetchCart();
     }, []);
 
-    const handleCreateOrder = async () => {
-        const newOrder = {
-            user_id: "68c3bf1c52fb228b8e5dae45",
-            total_amount: 0,
-            status: "cart",
-            isDeleted: false,
+    // Xoá sản phẩm khỏi giỏ hàng
+    const handleRemove = (product_id) => {
+        setCartItems(cartItems.filter(item => item.product_id !== product_id));
+    };
+
+    // Tính tổng tiền
+    const calculateTotal = () => {
+        return cartItems.reduce((total, item) => {
+            return total + item.price_each * item.quantity;
+        }, 0);
+    };
+
+    // Đặt hàng
+    const handleCheckout = async () => {
+        if (cartItems.length === 0) return alert("Giỏ hàng trống!");
+
+        const orderData = {
+            user_id: localStorage.getItem("user_id"),
+            total_amount: calculateTotal(),
+            items: cartItems.map(item => ({
+                product_id: item.product_id,
+                quantity: item.quantity,
+                price_each: item.price_each
+            }))
         };
 
         try {
-            const data = await createOrder({ order: newOrder });
-            if (data.order?._id) {
-                alert(`Order created with ID: ${data.order._id}`);
-                setOrder(data.order);
-                setItems([]);
-            } else {
-                alert("Failed to create order");
-            }
-        } catch (err) {
-            console.error(err.response?.data || err.message);
-            alert("Failed to create order");
+            await createOrder(orderData);
+            alert("Đặt hàng thành công!");
+            navigate("/success"); // chuyển tới trang thành công
+        } catch (error) {
+            console.error(error);
+            alert("Đặt hàng thất bại, thử lại sau.");
         }
     };
 
     if (loading) return <p>Loading...</p>;
-    if (error) return <p>{error}</p>;
-    if (!order) return (
-        <div>
-            <p>No order found</p>
-            <button onClick={handleCreateOrder}>Create New Order</button>
-        </div>
-    );
 
     return (
-        <div style={{ maxWidth: "700px", margin: "20px auto", padding: "15px", border: "1px solid #ccc", borderRadius: "8px" }}>
-            <h2>Order Details</h2>
-            <p><strong>Order ID:</strong> {order._id}</p>
-            <p><strong>User:</strong> {order.user_id.name} ({order.user_id.email})</p>
-            <p><strong>Status:</strong> {order.status}</p>
-            <p><strong>Total Amount:</strong> ${order.total_amount}</p>
-            <p><strong>Created At:</strong> {new Date(order.createdAt).toLocaleString()}</p>
-
-            <h3>Items</h3>
-            {items.length > 0 ? (
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <div className="cart-container">
+            <h2>Giỏ hàng của bạn</h2>
+            {cartItems.length === 0 ? (
+                <p>Giỏ hàng trống.</p>
+            ) : (
+                <table className="cart-table">
                     <thead>
                     <tr>
-                        <th style={{ borderBottom: "1px solid #ccc" }}>Name</th>
-                        <th style={{ borderBottom: "1px solid #ccc" }}>Category</th>
-                        <th style={{ borderBottom: "1px solid #ccc" }}>Price</th>
-                        <th style={{ borderBottom: "1px solid #ccc" }}>Quantity</th>
-                        <th style={{ borderBottom: "1px solid #ccc" }}>Total</th>
+                        <th>Sản phẩm</th>
+                        <th>Giá</th>
+                        <th>Số lượng</th>
+                        <th>Tổng</th>
+                        <th>Hành động</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {items.map(item => (
-                        <tr key={item._id}>
-                            <td>{item.product_id.name}</td>
-                            <td>{item.product_id.category}</td>
-                            <td>${item.product_id.price}</td>
+                    {cartItems.map((item, index) => (
+                        <tr key={index}>
+                            <td>{item.product_name || item.product_id}</td>
+                            <td>{item.price_each.toLocaleString()} đ</td>
                             <td>{item.quantity}</td>
-                            <td>${item.product_id.price * item.quantity}</td>
+                            <td>{(item.price_each * item.quantity).toLocaleString()} đ</td>
+                            <td>
+                                <button onClick={() => handleRemove(item.product_id)}>
+                                    Xóa
+                                </button>
+                            </td>
                         </tr>
                     ))}
                     </tbody>
                 </table>
-            ) : (
-                <p>No items in this order.</p>
             )}
-
-            <button
-                onClick={handleCreateOrder}
-                style={{ marginTop: "20px", padding: "10px 20px", backgroundColor: "#4caf50", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer" }}
-            >
-                Create New Order
-            </button>
+            {cartItems.length > 0 && (
+                <div className="cart-summary">
+                    <h3>Tổng cộng: {calculateTotal().toLocaleString()} đ</h3>
+                    <button className="checkout-btn" onClick={handleCheckout}>
+                        Thanh toán
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

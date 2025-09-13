@@ -73,31 +73,52 @@ const Header = () => {
                 <nav className="flex-1 text-center">
                     <ul className="flex justify-center items-center space-x-6 font-medium text-[#5b3920]">
                         <li><Link to="/home" className="px-3 py-1 hover:text-[#7b4f2e] transition">Home</Link></li>
-                        <li><Link to="/pet-dashboard" className="px-3 py-1 hover:text-[#7b4f2e] transition">Manage pet profiles</Link></li>
+                        <li><Link to="/pet-dashboard" className="px-3 py-1 hover:text-[#7b4f2e] transition">Manage pet
+                            profiles</Link></li>
                         <li className="group relative">
                             <span className="px-3 py-1 hover:text-[#7b4f2e] transition cursor-pointer">Track health records</span>
                             <ul className="absolute left-0 top-full opacity-0 invisible group-hover:visible group-hover:opacity-100
                          transform translate-y-2 group-hover:translate-y-0 transition-all duration-300
                          bg-[#fdf4eb] shadow-xl rounded-lg min-w-[200px] py-2">
-                                <li><Link to="/about" className="block px-5 py-2 hover:bg-[#f7ede2] hover:text-[#7b4f2e] rounded-md transition">Dashboard</Link></li>
-                                <li><Link to="/pricing" className="block px-5 py-2 hover:bg-[#f7ede2] hover:text-[#7b4f2e] rounded-md transition">Documents</Link></li>
+                                <li><Link to="/dashboard"
+                                          className="block px-5 py-2 hover:bg-[#f7ede2] hover:text-[#7b4f2e] rounded-md transition">Dashboard</Link>
+                                </li>
+                                <li><Link to="/documents"
+                                          className="block px-5 py-2 hover:bg-[#f7ede2] hover:text-[#7b4f2e] rounded-md transition">Documents</Link>
+                                </li>
                             </ul>
                         </li>
                         <li><Link to="/shop" className="px-3 py-1 hover:text-[#7b4f2e] transition">Shop</Link></li>
+                        <li className="group relative">
+                            <span className="px-3 py-1 hover:text-[#7b4f2e] transition cursor-pointer">Appointment</span>
+                            <ul className="absolute left-0 top-full opacity-0 invisible group-hover:visible group-hover:opacity-100
+                         transform translate-y-2 group-hover:translate-y-0 transition-all duration-300
+                         bg-[#fdf4eb] shadow-xl rounded-lg min-w-[200px] py-2">
+                                <li><Link to="/booking"
+                                          className="block px-5 py-2 hover:bg-[#f7ede2] hover:text-[#7b4f2e] rounded-md transition">Booking</Link>
+                                </li>
+                                <li><Link to="/service"
+                                          className="block px-5 py-2 hover:bg-[#f7ede2] hover:text-[#7b4f2e] rounded-md transition">Services</Link>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
                 </nav>
 
                 {/* Right icons */}
                 <div className="flex items-center gap-4">
                     {/* Cart icon */}
-                    <Link to="/cart" className="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#f1e0d0] transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#7b4f2e" strokeWidth="2" viewBox="0 0 24 24">
-                            <circle cx="9" cy="21" r="1" />
-                            <circle cx="20" cy="21" r="1" />
-                            <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+                    <Link to="/cart"
+                          className="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#f1e0d0] transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#7b4f2e"
+                             strokeWidth="2" viewBox="0 0 24 24">
+                            <circle cx="9" cy="21" r="1"/>
+                            <circle cx="20" cy="21" r="1"/>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
                         </svg>
                         {totalItems > 0 && (
-                            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                            <span
+                                className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                 {totalItems}
               </span>
                         )}

@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Tạo instance axios
 const api = axios.create({
-    baseURL: "http://172.16.3.236:5000/api/product",
+    baseURL: "http://127.0.0.1:5001/api/product",
 });
 
 // Interceptor: tự động thêm token từ localStorage
@@ -20,7 +20,7 @@ api.interceptors.request.use(
 // Lấy tất cả sản phẩm
 export const getAllProducts = async () => {
     try {
-        const res = await api.get("/getAll");
+        const res = await api.get('/getAll');
         return res.data;
     } catch (err) {
         console.error("Error fetching products:", err);

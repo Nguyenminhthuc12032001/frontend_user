@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Tạo instance axios
 const api = axios.create({
-    baseURL: "http://172.16.3.236:5000/api/user",
+    baseURL: "http://127.0.0.1:5001/api/user",
 });
 
 // Interceptor: tự động thêm token từ localStorage
