@@ -12,7 +12,7 @@ export default function useUpload() {
                 folder
             }, 
             {
-            headers: { Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzEzZjIzNjFkMTFhYmJjOTdlMDJhOSIsInJvbGUiOiJhZG1pbiIsInZlcnNpb25Ub2tlbiI6MSwiaWF0IjoxNzU3NjA2NjA4LCJleHAiOjE3NTc5NjY2MDh9.tMdK_Ori-SkWXiVROHIvCH4rHxdV6JtAcLewqDe7Lyc" }
+            headers: { Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzNiZjFjNTJmYjIyOGI4ZTVkYWU0NSIsInJvbGUiOiJhZG1pbiIsInZlcnNpb25Ub2tlbiI6MCwiaWF0IjoxNzU3NzkwNzUwLCJleHAiOjE3NTgxNTA3NTB9.PVPoc0gh4wmlY7Loq3qOFCpZCkvGk3Cw1r2iFOtM1lQ" }
         })
         console.log(signRes);
 

@@ -1,58 +1,69 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createPet } from "../../api/managepet";
+import axios from "axios";
+import useUpload from "../../hook/useUpload";
 import backgroundImage from "../../assets/images/create_pet_background.png";
-import "../../assets/css/CreatePet.css"; // Thêm file CSS cho hiệu ứng shine
+import "../../assets/css/CreatePet.css"; // Add your own CSS for any effects
 
 const CreatePet = () => {
-    const [imageLinks, setImageLinks] = useState([""]);
-    const [loading, setLoading] = useState(false);
+    const [form, setForm] = useState({
+        name: "",
+        species: "",
+        breed: "",
+        age: "",
+        gender: "",
+    });
+    const [files, setFiles] = useState([]);
+    const { uploadFile, loading } = useUpload();
+    const [msg, setMsg] = useState(null);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
-
-    const brownColor = "#8B4513";
-
-    const handleImageChange = (index, value) => {
-        const newLinks = [...imageLinks];
-        newLinks[index] = value;
-        setImageLinks(newLinks);
-    };
-
-    const addImageField = () => {
-        if (imageLinks.length >= 5) {
-            alert("You can only add up to 5 images.");
-            return;
-        }
-        setImageLinks([...imageLinks, ""]);
-    };
-
-    const removeImageField = (index) => setImageLinks(imageLinks.filter((_, i) => i !== index));
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const validLinks = imageLinks.filter(link => link.trim() !== "");
-        if (!validLinks.length) return alert("Please enter at least one image link");
 
-        setLoading(true);
+        const upload = [];
+        for (const file of files) {
+            try {
+                const img = await uploadFile(file, 'pets');
+                console.log(img);
+                upload.push(img);
+            } catch (error) {
+                console.error("Error uploading file:", error);
+                setError("Failed to upload images. Please try again.");
+                return;  // Ngừng submit nếu có lỗi tải lên.
+            }
+        }
+
         const payload = {
-            name: e.target.name.value,
-            species: e.target.species.value,
-            breed: e.target.breed.value,
-            age: parseInt(e.target.age.value, 10),
-            gender: e.target.gender.value,
-            images: validLinks.slice(0, 5),
+            ...form,
+            age: Number(form.age),
+            images_url: upload,
         };
 
         try {
-            await createPet(payload);
-            alert("Pet added successfully!");
-            e.target.reset();
-            setImageLinks([""]);
+            // Lấy JWT token từ localStorage
+            const token = localStorage.getItem("authToken");
+            if (!token) {
+                setError("Token không hợp lệ hoặc đã hết hạn.");
+                return;
+            }
+
+            const res = await axios.post("http://localhost:5000/api/pet/createNew", payload, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            setMsg(res.data.msg);
+            setError(null);  // Reset any previous errors
+            console.log("Create new pet successfully.", res.data);
             navigate("/pet-dashboard");
         } catch (err) {
-            console.error(err);
-            alert("Failed to add pet!");
-        } finally {
-            setLoading(false);
+            setError(`Failed to add pet. Error: ${err.message}`);
+            setMsg(null);  // Reset any previous success messages
+            console.error("Error details:", err.response || err);
         }
     };
 
@@ -66,7 +77,6 @@ const CreatePet = () => {
                 padding: "20px",
             }}
         >
-            {/* Overlay mờ nhẹ */}
             <div className="absolute inset-0 bg-black/20"></div>
 
             <form
@@ -75,106 +85,136 @@ const CreatePet = () => {
             >
                 <h2
                     className="text-3xl font-extrabold text-center"
-                    style={{ color: brownColor, textShadow: "1px 1px 2px rgba(0,0,0,0.4)" }}
+                    style={{ color: "#8B4513", textShadow: "1px 1px 2px rgba(0,0,0,0.4)" }}
                 >
                     Add New Pet
                 </h2>
 
-                {["name", "species", "breed", "age"].map((field, idx) => (
+                {/* Form Fields */}
+                {[
+                    { label: "Name", name: "name", type: "text" },
+                    { label: "Species", name: "species", type: "text" },
+                    { label: "Breed", name: "breed", type: "text" },
+                    { label: "Age", name: "age", type: "number" },
+                ].map((field, idx) => (
                     <div key={idx}>
-                        <label style={{ color: brownColor, fontWeight: "500" }}>
-                            {field.charAt(0).toUpperCase() + field.slice(1)}:
+                        <label style={{ color: "#8B4513", fontWeight: "500" }}>
+                            {field.label}:
                         </label>
                         <input
-                            type={field === "age" ? "number" : "text"}
-                            name={field}
+                            type={field.type}
+                            name={field.name}
+                            value={form[field.name]}
+                            onChange={(e) => setForm({ ...form, [field.name]: e.target.value })}
                             required
                             className="w-full p-3 mt-1 rounded-xl border border-white/50 bg-white/50 text-brown placeholder:text-brown/70 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
-                            style={{ color: brownColor }}
+                            style={{ color: "#8B4513" }}
                         />
                     </div>
                 ))}
 
+                {/* Gender Select */}
                 <div>
-                    <label style={{ color: brownColor, fontWeight: "500" }}>Gender:</label>
+                    <label style={{ color: "#8B4513", fontWeight: "500" }}>Gender:</label>
                     <select
                         name="gender"
+                        value={form.gender}
+                        onChange={(e) => setForm({ ...form, gender: e.target.value })}
                         required
                         className="w-full p-3 mt-1 rounded-xl border border-white/50 bg-white/50 text-brown focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
-                        style={{ color: brownColor }}
+                        style={{ color: "#8B4513" }}
                     >
-                        <option value="" style={{ color: brownColor }}>Select Gender</option>
-                        <option value="Male" style={{ color: brownColor }}>Male</option>
-                        <option value="Female" style={{ color: brownColor }}>Female</option>
+                        <option value="" style={{ color: "#8B4513" }}>Select Gender</option>
+                        <option value="Male" style={{ color: "#8B4513" }}>Male</option>
+                        <option value="Female" style={{ color: "#8B4513" }}>Female</option>
                     </select>
                 </div>
 
-                <div>
-                    <label style={{ color: brownColor, fontWeight: "500" }}>Pet Images (links):</label>
-                    {imageLinks.map((link, idx) => (
-                        <div key={idx} className="flex gap-2 mt-2">
-                            <input
-                                type="text"
-                                value={link}
-                                onChange={(e) => handleImageChange(idx, e.target.value)}
-                                placeholder="https://example.com/image.jpg"
-                                className="flex-1 p-3 rounded-xl border border-white/50 bg-white/50 placeholder:text-brown/60 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
-                                style={{ color: brownColor }}
-                            />
-                            {imageLinks.length > 1 && (
-                                <button
-                                    type="button"
-                                    onClick={() => removeImageField(idx)}
-                                    className="px-3 py-2 rounded-xl bg-red-500 text-white shadow-md btn-shine transition-all duration-300"
-                                >
-                                    ✕
-                                </button>
-                            )}
-                        </div>
-                    ))}
-                    {imageLinks.length < 5 && (
-                        <button
-                            type="button"
-                            onClick={addImageField}
-                            className="mt-3 px-4 py-2 rounded-xl bg-gradient-to-r from-yellow-500 to-yellow-700 text-white font-semibold shadow-lg hover:scale-105 hover:shadow-2xl transition-all duration-300 btn-shine"
-                        >
-                            + Add another image
-                        </button>
-                    )}
-                </div>
-
-                {imageLinks.some(link => link.trim()) && (
-                    <div className="flex gap-2 flex-wrap mt-3">
-                        {imageLinks.filter(link => link.trim()).slice(0, 5).map((src, idx) => (
-                            <img
-                                key={idx}
-                                src={src}
-                                alt={`preview-${idx}`}
-                                className="w-24 h-24 object-cover rounded-xl border border-white/50 hover:scale-110 transition-transform duration-200"
-                            />
-                        ))}
+                {/* Error and Success Messages */}
+                {msg && (
+                    <div className="bg-green-100 text-green-800 p-2 rounded-md text-center">
+                        {msg}
+                    </div>
+                )}
+                {error && (
+                    <div className="bg-red-100 text-red-800 p-2 rounded-md text-center">
+                        {error}
                     </div>
                 )}
 
-                <div className="flex justify-between mt-6">
-                    <button
-                        type="button"
-                        onClick={() => navigate("/pet-dashboard")}
-                        className="px-6 py-3 rounded-xl border border-brown text-brown font-semibold hover:bg-brown/20 hover:scale-105 transition-all duration-300 shadow-md btn-shine"
-                        style={{ color: brownColor, borderColor: brownColor }}
-                    >
-                        Back
-                    </button>
+                {/* File Upload */}
+                <div className="lg:col-span-2">
+                    <label className="block text-sm font-semibold text-gray-800 mb-3">
+                        Pet Images
+                    </label>
+
+                    {files.length === 0 ? (
+                        <div className="relative border-2 border-dashed border-gray-300 hover:border-gray-400 rounded-2xl p-8 text-center transition-all duration-200 bg-gray-50 hover:bg-gray-100">
+                            <input
+                                type="file"
+                                multiple
+                                accept="image/*"
+                                onChange={(e) => setFiles(Array.from(e.target.files))}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                            <div className="space-y-3">
+                                <div className="w-14 h-14 mx-auto bg-black/10 rounded-full flex items-center justify-center">
+                                    <svg className="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m-6-6h12" />
+                                    </svg>
+                                </div>
+                                <p className="text-sm font-medium text-gray-900">Click or drag to upload</p>
+                                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB each</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="border-2 border-dashed border-gray-300 rounded-2xl p-4 bg-gray-50 transition-all duration-200">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                                {files.map((file, index) => (
+                                    <div
+                                        key={index}
+                                        className="relative group aspect-square rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition"
+                                    >
+                                        <img
+                                            src={URL.createObjectURL(file)}
+                                            alt={file.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const newFiles = [...files];
+                                                newFiles.splice(index, 1);
+                                                setFiles(newFiles);
+                                            }}
+                                            className="absolute top-2 right-2 bg-white/80 backdrop-blur-sm hover:bg-white text-gray-700 hover:text-red-600 rounded-full w-7 h-7 flex items-center justify-center shadow-md transition opacity-0 group-hover:opacity-100"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Submit Button */}
+                <div className="pt-4">
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`px-6 py-3 rounded-xl text-white font-semibold shadow-lg btn-shine ${
-                            loading
-                                ? "bg-gray-400 cursor-not-allowed"
-                                : "bg-gradient-to-r from-yellow-600 to-yellow-800 hover:scale-105 hover:shadow-2xl transition-all duration-300"
-                        }`}
+                        className="w-full bg-black hover:bg-gray-900 disabled:bg-gray-300 text-white font-semibold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:cursor-not-allowed transform hover:scale-[1.01] disabled:transform-none"
                     >
-                        {loading ? "Adding..." : "Add Pet"}
+                        {loading ? (
+                            <div className="flex items-center justify-center space-x-2">
+                                <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></div>
+                                <span>Adding Pet...</span>
+                            </div>
+                        ) : (
+                            "Add Pet"
+                        )}
                     </button>
                 </div>
             </form>
